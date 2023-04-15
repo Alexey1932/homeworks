@@ -56,8 +56,3 @@ class AlarmClock {
 		this.alarmCollection = []
 	}
 }
-
-const allah = new AlarmClock();
-allah.addClock('16:45', () => { });
-allah.getCurrentFormattedTime();
-allah.start();
