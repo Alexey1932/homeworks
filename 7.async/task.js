@@ -4,28 +4,21 @@ class AlarmClock {
 		this.intervalId = null;
 	}
 
-	addClock(callback, time, canCall = true) {
+	addClock(time, callback, canCall = true) {
 		if (!callback || !time) {
 			throw new Error("Отсутствуют обязательные аргументы");
 		}
-		for (let i in this.alarmCollection) {
-			if (this.alarmCollection[i].time === time) {
-				console.warn('Уже присутствует звонок на это же время');
-				return;
-			}
+		if (this.alarmCollection.some((elem) => elem.time === time)) {
+			console.warn('Уже присутствует звонок на это же время')
 		}
 		this.alarmCollection.push({ callback: callback, time: time, canCall: canCall });
 	}
 
 	removeClock(time) {
-		for (let i in this.alarmCollection) {
-			if (this.alarmCollection[i].time === time) {
-				this.alarmCollection.splice(i, 1)
-			}
-		}
+		this.alarmCollection = this.alarmCollection.filter((elem) => elem.time !== time)
 	}
 
-	getCurrentFormattedDate() {
+	getCurrentFormattedTime() {
 		let Data = new Date();
 		let Hour = Data.getHours();
 		let Minutes = Data.getMinutes();
@@ -35,22 +28,16 @@ class AlarmClock {
 
 	start() {
 		if (this.intervalId) {
-			return
+			return;
 		}
-		else {
-			this.intervalId = setInterval(() => {
-				this.alarmCollection.forEach(i => {
-					if (i.time === this.getCurrentFormattedDate() & i.canCall === true) {
-						i.canCall = false;
-						try {
-							i.callback();
-						} catch (e) {
-							console.error(e);
-						}
-					}
-				})
-			}, 1000);
-		}
+		this.intervalId = setInterval(() => {
+			this.alarmCollection.forEach(i => {
+				if (i.time === this.getCurrentFormattedTime() & i.canCall === true) {
+					i.canCall = false;
+					i.callback();
+				}
+			})
+		}, 1000);
 	}
 
 	stop() {
@@ -69,3 +56,8 @@ class AlarmClock {
 		this.alarmCollection = []
 	}
 }
+
+const allah = new AlarmClock();
+allah.addClock('16:45', () => { });
+allah.getCurrentFormattedTime();
+allah.start();
